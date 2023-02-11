@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 
-extension isDigit on String{
-  
+extension IsDigit on String? {
+  bool digit() {
+    var length = this?.length;
+    if (length != 0) {
+      for (var i = 0; i < length!; i++) {
+        var code = (this?.codeUnits[i]) ?? 0;
+        if (!(code >= 48 && code <= 57)) {
+          return false;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 void main() {
@@ -26,6 +38,8 @@ class MyFormFields extends StatefulWidget {
 }
 
 class _MyFormFieldsState extends State<MyFormFields> {
+  GlobalKey<FormState> formKey2 = GlobalKey<FormState>();
+
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool _obsecure = true;
 
@@ -138,28 +152,38 @@ class _MyFormFieldsState extends State<MyFormFields> {
                                   const BorderRadius.all(Radius.circular(30)),
                               elevation: 30,
                               shadowColor: Colors.black,
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Mobile Number should not be Empty';
-                                  }
-                                  for (var i = 0; i < value.length; i++) {
-                                    if (!(value.codeUnits[i] >= 48 &&
-                                        value.codeUnits[i] <= 57)) {
+                              child: Form(
+                                key: formKey2,
+                                child: TextFormField(
+                                  onChanged: (value) {
+                                    formKey2.currentState!.validate();
+                                  },
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Mobile Number should not be Empty';
+                                    } else if (!(value.digit())) {
                                       return 'Invalid input is not digits';
                                     }
-                                  }
-                                  return null;
-                                },
-                                decoration: const InputDecoration(
-                                    label: Text('Mobile Number'),
-                                    hintText: 'i.e 03153891302',
-                                    prefixIcon: Icon(Icons.phone),
-                                    border: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.black),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(30)))),
+                                    return null;
+
+                                    //   for (var i = 0; i < value.length; i++) {
+                                    //     if (!(value.codeUnits[i] >= 48 &&
+                                    //         value.codeUnits[i] <= 57)) {
+                                    //       return 'Invalid input is not digits';
+                                    //     }
+                                    //   }
+                                    //   return null;
+                                  },
+                                  decoration: const InputDecoration(
+                                      label: Text('Mobile Number'),
+                                      hintText: 'i.e 03153891302',
+                                      prefixIcon: Icon(Icons.phone),
+                                      border: OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(30)))),
+                                ),
                               ),
                             ),
                           ),
